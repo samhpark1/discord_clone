@@ -23,6 +23,6 @@ yarn-debug.log*
 yarn-error.log*
 
 #backend
-/backend/__pycache__
 /backend/dvenv
 /backend/config.py
+__pycache__/
