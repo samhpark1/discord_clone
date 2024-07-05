@@ -20,6 +20,31 @@ def user_create():
     except Exception as e:
         return jsonify({"error": f"error in adding user: {str(e)}"}), 400
 
+@user_routes.route('/api/users/get', methods=['GET'])
+def user_get():
+    data = request.get_json()
+    id = data.get("id")
+    username = data.get("username")
+    email = data.get("name")
+
+    try:
+        if id:
+            id = int(id)
+            user = db.get_or_404(User, id)
+        elif username:
+            user = db.one_or_404(db.select(User).filter_by(username=username))
+        elif email:
+            user = db.one_or_404(db.select(User).filter_by(email=email))
+        return jsonify({
+            "id": user.id,
+            "username": user.username,
+            "email": user.email
+        })
+    except Exception as e:
+        return jsonify({"error": f"User not found: {str(e)}"}), 404
+
+            
+
 @user_routes.route('/api/users/delete', methods=['DELETE'])
 def user_delete():
     try:
@@ -30,19 +55,20 @@ def user_delete():
 
         metric = [None, None]
 
-        if id != None:
+        if id:
+            id = int(id)
             metric[0] = "id"
             metric[1] = id
             user = db.session.execute(db.select(User).filter_by(id=id)).scalar_one()
             db.session.delete(user)
             db.session.commit()
-        elif username != None:
+        elif username:
             metric[0] = "username"
             metric[1] = username
             user = db.session.execute(db.select(User).filter_by(username=username)).scalar_one()
             db.session.delete(user)
             db.session.commit()
-        elif email != None:
+        elif email:
             metric[0] = "email"
             metric[1] = email
             user = db.session.execute(db.select(User).filter_by(email=email)).scalar_one()
@@ -51,4 +77,6 @@ def user_delete():
         return jsonify({"message": f"User with {metric[0]}: {metric[1]} successfully deleted"}), 200
     except NoResultFound:
         return jsonify({"error": f"No User with {metric[0]}: {metric[1]} found"})
+
+
 
