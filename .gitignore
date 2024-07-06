@@ -30,3 +30,4 @@ __init__.py
 
 /alembic/
 alembic.ini
+alembic/
