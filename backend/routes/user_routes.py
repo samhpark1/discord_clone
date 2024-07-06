@@ -43,6 +43,25 @@ def user_get():
     except Exception as e:
         return jsonify({"error": f"User not found: {str(e)}"}), 404
 
+
+@user_routes.route('/api/users/getAll')
+def users_getAll():
+    try:
+        users = User.query.all()
+        user_list = []
+        for user in users:
+            user_data = {
+                "id": user.id,
+                "username": user.username,
+                "email": user.email
+            }
+            user_list.append(user_data)
+        
+        if len(user_list) == 0:
+            return jsonify({"message": "no entries of (User)"}), 200
+        return jsonify(user_list), 200
+    except Exception as e:
+        return jsonify({"error": f"Unable to retrieve all users: {str(e)}"})
             
 
 @user_routes.route('/api/users/delete', methods=['DELETE'])
