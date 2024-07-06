@@ -26,3 +26,7 @@ yarn-error.log*
 /backend/dvenv
 /backend/config.py
 __pycache__/
+__init__.py
+
+/alembic
+alembic.ini
