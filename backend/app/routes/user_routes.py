@@ -1,26 +1,37 @@
 from flask import Blueprint, jsonify, request
+from datetime import datetime
 from app.db import db_manager
-from app.tables.user import User
-
-user_routes = Blueprint("user_routes", __name__)
+from app.models import UserModel
 
 user_routes = Blueprint("user_routes", __name__)
 
 @user_routes.route('/users', methods=['POST'])
 def create_user():
-    data = request.get_json()
-
     try:
-        with db_manager.sql.session_scope() as session:
-            user = User(
-                username=data['username'],
-                email=data['email'],
-                hashed_password=data['hash']
-            )
-            session.add(user)
-            # No need to commit — handled by session_scope
-        return jsonify({'message': 'User created'}), 201
+        data = request.get_json()
 
+        username = data["username"]
+        email = data["email"]
+        avatar = data["avatar"]
+        password_hash = data["password_hash"]
+        created_at = datetime.fromisoformat(data["created_at"])
+
+        created_username = UserModel.create_user(
+            username=username,
+            email=email,
+            avatar=avatar,
+            password_hash=password_hash,
+            created_at=created_at
+        )
+
+        return jsonify({"msg": f"{created_username} created successfully!"}), 201
+
+    except KeyError as e:
+        return jsonify({"err": f"Missing field in request body: {str(e)}"}), 400
+    except ValueError as e:
+        return jsonify({"err": f"Invalid datetime format: {str(e)}"}), 400
     except Exception as e:
-        print("❌ Error during user creation:", e)
-        return jsonify({'error': str(e)}), 500
+        return jsonify({"err": f"Unexpected error: {str(e)}"}), 500
+
+
+    
