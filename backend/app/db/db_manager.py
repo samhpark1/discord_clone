@@ -11,6 +11,11 @@ class DBManager:
             raise RuntimeError("SQL Manager not enabled")
         return self.sql.get_session()
 
+    def session_scope(self):
+        if not self.sql:
+            raise RuntimeError("SQL Manager not enabled")
+        return self.sql.get_session()
+
     # def get_nosql_collection(self, name):
     #     if not self.nosql:
     #         raise RuntimeError("NoSQL Manager not enabled")

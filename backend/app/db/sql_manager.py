@@ -3,6 +3,7 @@ from sqlalchemy.orm import sessionmaker, scoped_session
 from contextlib import contextmanager
 from dotenv import load_dotenv
 import os
+import logging
 
 load_dotenv()
 
@@ -20,17 +21,5 @@ class SQLManager:
 
     def init_db(self, Base):
         Base.metadata.create_all(bind=self.engine)
-
-    @contextmanager
-    def session_scope(self):
-        session = self.get_session()
-        try:
-            yield session
-            session.commit()
-        except:
-            session.rollback()
-            raise
-        finally:
-            session.close()
 
     
